@@ -1,50 +1,73 @@
 #include<stdio.h>
-#include<stdlib.h>
-struct rr
+ 
+int main()
 {
- int pno,btime,sbtime,wtime,lst;
-}p[10];
-int main(){
-int n,ts,i,flag,pp=-1,ptm=0,count;
-printf("Round Robin Scheduling\n");
-printf("Enter number of process: ");
-scanf("%d",&n);
-printf("Enter time slice: ");
-scanf("%d",&ts);
-printf("Enter the burst time\n");
-for(i=0;i<n;i++)
-{
-  printf("Process %d",i+1);
-  scanf("%d",&p[i].btime);
-  p[i].wtime=p[i].lst=0;
-  p[i].pno=i+1;
-  p[i].sbtime=p[i].btime;
-}
-
-printf("Scheduling\n");
-do
-{
-  flag=0;
-  for(i=0;i<n;i++)
-  {
-    count=p[i].btime;
-    if(count>0)
+    //Input no of processed
+    int  n;
+    printf("Enter Total Number of Processes:");
+    scanf("%d", &n);
+    int wait_time = 0, ta_time = 0, arr_time[n], burst_time[n], temp_burst_time[n];
+    int x = n;
+ 
+    //Input details of processes
+    for(int i = 0; i < n; i++)
     {
-      flag=-1;
-      count=(count>=ts)?ts:count;
-      printf("\nprocess %d",p[i].pno);
-      printf("from %d",ptm);
-      ptm=ptm+count;
-      printf("to %d",ptm);
-      p[i].btime-=count;
-      if(pp!=i)
-      {
-        pp=i;
-        p[i].wtime+=ptm-p[i].lst-count;
-        p[i].lst=ptm;
-      }
+        printf("Enter Details of Process %d \n", i + 1);
+        printf("Arrival Time:  ");
+        scanf("%d", &arr_time[i]);
+        printf("Burst Time:   ");
+        scanf("%d", &burst_time[i]);
+        temp_burst_time[i] = burst_time[i];
     }
-  }
-}
-while(1);
+ 
+    //Input time slot
+    int time_slot;
+    printf("Enter Time Slot:");
+    scanf("%d", &time_slot);
+ 
+    //Total indicates total time
+    //counter indicates which process is executed
+    int total = 0,  counter = 0,i;
+    printf("Process ID       Burst Time       Turnaround Time      Waiting Time\n");
+    for(total=0, i = 0; x!=0; )  
+    {  
+        // define the conditions
+        if(temp_burst_time[i] <= time_slot && temp_burst_time[i] > 0)    
+        {  
+            total = total + temp_burst_time[i];  
+            temp_burst_time[i] = 0;  
+            counter=1;  
+        }     
+        else if(temp_burst_time[i] > 0)  
+        {  
+            temp_burst_time[i] = temp_burst_time[i] - time_slot;  
+            total  += time_slot;    
+        }  
+        if(temp_burst_time[i]==0 && counter==1)  
+        {  
+            x--; //decrement the process no.  
+            printf("\nProcess No %d  \t\t %d\t\t\t\t %d\t\t\t %d", i+1, burst_time[i],
+                   total-arr_time[i], total-arr_time[i]-burst_time[i]);  
+            wait_time = wait_time+total-arr_time[i]-burst_time[i];  
+            ta_time += total -arr_time[i];  
+            counter =0;     
+        }  
+        if(i==n-1)  
+        {  
+            i=0;  
+        }  
+        else if(arr_time[i+1]<=total)  
+        {  
+            i++;  
+        }  
+        else  
+        {  
+            i=0;  
+        }  
+    }  
+    float average_wait_time = wait_time * 1.0 / n;
+    float average_turnaround_time = ta_time * 1.0 / n;
+    printf("\nAverage Waiting Time:%f", average_wait_time);
+    printf("\nAvg Turnaround Time:%f", average_turnaround_time);
+    return 0;
 }
